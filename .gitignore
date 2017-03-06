@@ -1,0 +1,8 @@
+*.bbl
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.aux
+*.blg
+mainNotes.bib
