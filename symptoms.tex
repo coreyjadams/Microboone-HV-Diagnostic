@@ -1,9 +1,87 @@
 \section{Symptoms}
 
+As the high voltage issues developed, several symptoms were identified which provided metrics to judge the stability or instability of the system.  Several were monitoring variables of the HV system itself, such as the current readback from the Glassman power supply and the voltage of the pickoff point.  Others were detected through the readout of the detector, including persistent high frequency (900kHz) noise on some detector channels, and ``burst'' events, described below.
+
 \subsection{Pickoff Point Instability}
 
-\subsection{Glassman Current RMS}
+The first symptom to be detected during MicroBooNE's high voltage incident was large, sustained deviations on the pickoff point (see Section~\ref{sec:Pickoff-Point}).  Nominally, this point sits at a value of approximately $\frac{5 M\Omega}{17.1 G\Omega}$ = 0.029 \% of the applied voltage by the power supply.  As seen in Figure \ref{fig:pickoff-deviations-jan27}, the pickoff point values deviated significantly from the nominal values.  In this figure, the band of nominal values is selected as the minimum and maximum of a two week stable period.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/pickoffPoint-Jan27-Deviation.pdf}
+  \caption{Pickoff point deviations over the weekend of Jan 27th.  Though the absolute calibration is not correct on the current from the HV power supply, there is clearly a correlation between the pickoff point deviations and noise on the HV power supply.}
+  \label{fig:pickoff-deviations-jan27}
+\end{figure}
+
+
+\subsection{HV Power Supply Current RMS}
+
+As seen in Figure \ref{fig:pickoff-deviations-jan27} is the calculated current from the back of the high voltage power supply.  The power supply outputs and analog voltage from which we derive a current using the following formula:
+
+The current shown in the figure demonstrates clear increases in noisiness when the pickoff point deviations occur, indicating that whatever the cause of the problems is, it affects both the HV power supply and the pickoff point simultaneously.
+
+Because of the way the monitoring data is archived, we lack precise enough data to calculate an RMS of the calculated current from the back of the power supply, and can make only qualitative comparisons to historical data.  We have since implemented archiving of not just the values output by the power supply, but also the noise on those value measurements.
 
 \subsection{TPC Asic LV Current Draw}
 
+In coincidence with the large deviations of the pickoff point, MicroBooNE also observed increased current draw on a handful of power supplies for the cold electronics.  Figure~\ref{fig:ft1-jan27-deviation} shows the increased draw on the worst feedthrough, labeled within the detector as ``FT1.''  High current draws are not unusual, though this incident required multiple power cycles to restore nominal operation.  Additionally, the final power cycle on 1/29/17 just before 14:00 CST occurred after the detector's high voltage had been decreased from 70kV to 65kV.  After this, the current draw was stable for some time, though later attempts to ramp up the detector also caused increased current draw on this feedthrough.
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/ft1-Jan27-Deviation.pdf}
+  \caption{The current for the cold electronics power supply during the same time period as Figure\ref{fig:pickoff-deviations-jan27}.}
+  \label{fig:ft1-jan27-deviation}
+\end{figure}
+
+The increased current draw is correlated well with a persistant noise state on the detector electronics.  It is thought that the high voltage instability induces a noise state on the electronics that persists until the electronics are reconfigured or power cycled, which is why the power cycles in Figure~\ref{fig:ft1-jan27-deviation} show normal current draw afterwards, at least temporarily, for 3 of the 4 power cycles shown.
+
+Figure~\ref{fig:zigzag-evd} shows an event display of the part of the detector impacted by the persistant noise state.  Figure~\ref{fig:zigzag-wires} shows a portion of a waveform from this region compared to normal running conditions.  The increase in noise is almost exclusively at the 900kHz band, and shows a dramatic increase over the usual noise at 900kHz.
+
+Based on the observations of increased noise on the feedthroughs showing increased current draw, the symptom of current draw is a secondary symptom of the high voltage instabilities.  A high voltage incident (like a ``burst'' event discussed below) likely induces a bad state in the detector electronics when it overloads the input on the electronics.  We saw many incidences of increased current draw on the feedthrough that started after high voltage instabilities, but we never observed increased current draw when the high voltage was not on.
+
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/zigzagWaveforms.pdf}
+  \includegraphics[width=0.95\textwidth]{figures/zigzagPowerSpectrum.pdf}
+  \caption{}
+  \label{fig:zigzag-wires}
+\end{figure}
+
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/PersistantZigZag.pdf}
+  \caption{}
+  \label{fig:zigzag-evd}
+\end{figure}
+
+
 \subsection{``Burst'' Events}
+
+The last observation of high voltage instability symptoms are the ``burst'' events, an example of which is shown in Figure~\ref{fig:burst-event}.  In these events, we see high ADC counts on all channels, across all three readout planes, simultaneously.  Even wires that are unresponsive see these burst events, as shown in Figure~\ref{fig:burst_event_wires}.
+
+The pulse amplitude after burst event shows a very long return to baseline after the event occurs, seen in both Figures \ref{fig:burst_event} and \ref{fig:burst_event_wires}.  There are several notable features of these events:
+\begin{itemize}
+
+  \item{ \bf Wire Length Dependence}  
+
+\end{itemize}
+
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/burst_event_U.pdf}
+  \includegraphics[width=0.95\textwidth]{figures/burst_event_V.pdf}
+  \includegraphics[width=0.95\textwidth]{figures/burst_event_Y.pdf}
+  \caption{Burst events on the U, V and Y plane.  }
+  \label{fig:burst_event}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth]{figures/burstWaveforms.pdf}
+  \includegraphics[width=0.95\textwidth]{figures/burstWaveforms_zoom.pdf}
+  \caption{Burst event waveforms from U plane wires.  In the top image, the entire waveform is shown, demonstrating the long return to baseline that produces the rainbow appearance in the U plane of Figure~\ref{fig:burst_event}.  In the bottom image is shown the wire response at the incidence of the burst event, as well as the response on an unresponsive channel.}
+  \label{fig:burst_event_wires}
+\end{figure}

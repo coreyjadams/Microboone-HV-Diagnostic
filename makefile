@@ -1,6 +1,6 @@
 
 
-main.pdf: *.tex *.bib
+main.pdf: *.tex *.bib 
 	latexmk -pdf main.tex
 
 clean:
