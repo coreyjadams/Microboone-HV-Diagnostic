@@ -1,10 +1,22 @@
 \section{Diagnostics}
 
 \subsection{(Warm) HV Supply Tests}
+
+After the weekend of Jan 27th, 2017, MicroBooNE powered down the drift high voltage supply to investigate.  To diagnose the source of the troubling, a large number of procedures were attempted, described here.
+
 \subsubsection{Glassman HV Supply replacement}
+The very first test performed on the system was to replace the high voltage power supply.  The system is a a Glassman power supply, described in Section~\ref{sec:HV-Supply}.  A spare was available and installed, and when the spare supply was powered on no observable difference was detected in the behavior of the system.  The spare supply was not ramped to a high voltage initially, since the symptoms were clearly occurring at a relatively low ( \textless 10kV) voltage.
+
 \subsubsection{HV Cable inspection}
+The next obvious step to search for a hardware failure was in the high voltage cables that bring the high voltage from the Glassman supply, through both filter pots, and into the cryostat high voltage feedthrough.  All connections of cable to supply or filters pots were checked, and no obvious defects were found.
+
 \subsubsection{AC Power Distribution Inspection}
+
+Considering that one main symptom of the high voltage instabilities is the high RMS on the current output from the HV power supply, we investigated the AC power distribution to the power supply itself.  Using an AC analyzer (``ONEAC ONEView Line Noise Viewing Interface'' \cite{lineviewer}), we determined that there was no excess noise on the AC input to the high voltage supply than to any other areas of the detector systems.
+
 \subsubsection{``In air'' Test of HV Supply}
+
+As a last test of the warm side of the high voltage supply system, we pulled the cable that connects to the cryostat high voltage feedthrough out of the feedthrough, and ramped it to 20kV in air.  No symptoms were observed during this test, indicating that the power supply, filter pots, high voltage cables, and AC power distribution were all functioning properly.  Based off of this, it was concluded that the warm side of the high voltage supply system was in good health, and the problems with the HV system were downstream of the cryostat's high voltage feedthrough.
 
 \subsection{V vs. I Tests on cathode}
 
