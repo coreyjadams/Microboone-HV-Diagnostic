@@ -1,5 +1,6 @@
 from matplotlib import pyplot as plt
 import matplotlib.dates as mdates
+import matplotlib.patches as mpatches
 import datetime
 import pandas
 import numpy
@@ -12,9 +13,10 @@ from scipy import optimize
 
 
 def expWrapper(x, A, B, l):
-    return A - B * numpy.exp(- l * x)
+    return A - B * numpy.exp(- (1./l)*x)
 
-def fitExponetial(_input):
+
+def fitExponetial(_input, plot=False):
 
     # Get the initial time
 
@@ -24,41 +26,59 @@ def fitExponetial(_input):
     # print "Lowest time is " + str(numpy.min(_input['TimeInS']))
     _input['TimeDiff'] = (_input['TimeInS'] - _min_time)*1e-9
 
-    popt, perr = optimize.curve_fit(f = expWrapper,
-                                    xdata = _input['TimeDiff'],
-                                    ydata = _input['pickoffV'])
+    popt, perr = optimize.curve_fit(f=expWrapper,
+                                    xdata=_input['TimeDiff'],
+                                    ydata=_input['pickoffV'])
 
+    # print "{} : {}".format(_input["appliedV"].iloc[0], popt[0])
+    # print "RC: {} +/- {}".format(popt[2], numpy.sqrt(perr[2][2]))
 
-    print "{} : {}".format(_input["appliedV"].iloc[0], popt[0])
+    if plot:
 
-    # fig, ax = plt.subplots()
+        fig, ax = plt.subplots(figsize=(16, 9))
 
-    # plt.plot(_input['TimeDiff'], _input["pickoffV"])
-    # xVals = numpy.asarray(_input['TimeDiff'])
-    # yVals = expWrapper(xVals, popt[0], popt[1], popt[2])
-    # plt.plot(xVals, yVals)
+        line0, = plt.plot(_input['TimeDiff'],
+                          _input["pickoffV"],
+                          label="Pickoff Voltage",
+                          marker='o',
+                          # fillstyle='none',
+                          markersize=5,
+                          linewidth=0,
+                          color='black')
+        xVals = numpy.asarray(_input['TimeDiff'])
+        yVals = expWrapper(xVals, popt[0], popt[1], popt[2])
+        line1, = plt.plot(xVals, yVals,
+                          label="Exponential Fit (RC = {:.1f}s)".format(
+                              popt[2]),
+                          linestyle='--',
+                          linewidth=3,
+                          color='red')
 
-    # ax2 = ax.twinx()
-    # plt.plot(_input['TimeDiff'], _input["appliedV"])
+        extraString = 'Applied Voltage: -{}V'.format(_input['appliedV'].iloc[0])
+        handles, labels = ax.get_legend_handles_labels()
+        handles.append(mpatches.Patch(color='none', label=extraString))
+        plt.legend(handles=handles, fontsize=20)
 
+        plt.xlabel("Time [s]", fontsize=20)
+        plt.ylabel("Pickoff V [V]", fontsize=20)
 
-    # plt.grid(True)
-    # plt.show()
+        for tick in ax.xaxis.get_major_ticks():
+            tick.label.set_fontsize(20)
+        for tick in ax.yaxis.get_major_ticks():
+            tick.label.set_fontsize(20)
+        #     # specify integer or one of preset strings, e.g.
+        #     #tick.label.set_fontsize('x-small')
+        #     tick.label.set_rotation(30)
+        #     tick.label.set_horizontalalignment('right')
 
+        plt.grid(True)
+        # plt.show()
+        # print 'figures/RC-Pickoff-{}.pdf'.format(_input['appliedV'].iloc[0])
+        plt.savefig(
+            'figures/RC-Pickoff-{}.pdf'.format(_input['appliedV'].iloc[0]))
+        plt.close()
 
     return popt, perr
-
-
-def calcNominalPickoffRMS():
-    df = pandas.read_csv("csv/pickoffPointNominalRMS.csv",
-                         delimiter='\t',
-                         skiprows=19)
-
-    mean = numpy.mean(df['uB_TPCDrift_HV01_keithleyPickOff/getVoltage Value'])
-    _max = numpy.max(df['uB_TPCDrift_HV01_keithleyPickOff/getVoltage Value'])
-    _min = numpy.min(df['uB_TPCDrift_HV01_keithleyPickOff/getVoltage Value'])
-
-    return mean, _max - _min
 
 
 def main():
@@ -75,9 +95,6 @@ def main():
                             'uB_TPCDrift_HV01_keithleyPickOff/getVoltage Value': 'pickoffV'})
 
     df['Time'] = pandas.to_datetime(df['Time'])
-
-    # Initialize a plot:
-    f, ax = plt.subplots(figsize=(16, 9))
 
     daysFmt = mdates.DateFormatter('%D %H:%M')
 
@@ -109,11 +126,16 @@ def main():
 
     pickoffV = []
     pickoffRMS = []
+    RC = []
+    RC_weight = []
 
     for V in appliedV:
         sub_df = df.query('appliedV == {}'.format(V))
-        popt, perr = fitExponetial(sub_df)
-
+        if V == 1000:
+            plot = True
+        else:
+            plot = True
+        popt, perr = fitExponetial(sub_df, plot)
 
         # SteadyState value:
         pickoffV.append(popt[0])
@@ -121,17 +143,38 @@ def main():
         # Uncertainty:
         pickoffRMS.append(numpy.sqrt(perr[0][0]))
 
+        RC.append(popt[2])
+        RC_weight.append(1./numpy.sqrt(perr[2][2]))
 
-    print appliedV
-    print pickoffV
-    print pickoffRMS
+    # Initialize a plot:
+    f, ax = plt.subplots(figsize=(16, 9))
 
 
-    plt.errorbar(appliedV, pickoffV, yerr=pickoffRMS, xerr=None, fmt='o')
+    appliedV = -numpy.asarray(appliedV)
 
+    # make a fit of the pickoff V vs applied V
+    m, b = numpy.polyfit(appliedV, pickoffV, 1)
+
+    xVals = numpy.arange(0, 1.2*numpy.min(appliedV), -10)
+    yVals = b + numpy.asarray(xVals)*m
+
+    plt.plot(appliedV, pickoffV,  marker='o',
+             label="Pickoff Voltage",
+             markersize=12,
+             linewidth=0,
+             color='black')
+    plt.plot(xVals, yVals,
+             label="Linear Fit (R = {:.1f} GOhm)".format((53./m)*1e-3),
+             linestyle='--',
+             linewidth=3)
+
+    plt.legend(fontsize=20, loc='upper left')
     ax.set_ylabel('Pickoff Voltage [V]', fontsize=20, color='black')
     ax.set_xlabel('Applied Voltage [V]', fontsize=20, color='black')
     ax.tick_params('y', colors='black', width=2, size=10, labelsize=20)
+
+    plt.xlim([0, -1100])
+    plt.ylim([0, -5])
 
     for tick in ax.xaxis.get_major_ticks():
         tick.label.set_fontsize(20)
@@ -140,7 +183,12 @@ def main():
     #     tick.label.set_rotation(30)
     #     tick.label.set_horizontalalignment('right')
 
+    # Next, fit the average RC constant:
+    RC_average = numpy.average(RC, weights = RC_weight)
+    print "RC Average is {}".format(RC_average)
+
     plt.grid(True)
+    plt.savefig('figures/V-vs-I-successful.pdf')
     plt.show()
 
 

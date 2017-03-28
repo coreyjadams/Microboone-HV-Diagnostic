@@ -6,3 +6,4 @@
 *.aux
 *.blg
 mainNotes.bib
+figures/*.pdf
