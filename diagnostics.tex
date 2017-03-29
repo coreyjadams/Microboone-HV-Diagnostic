@@ -18,7 +18,41 @@ Considering that one main symptom of the high voltage instabilities is the high 
 
 As a last test of the warm side of the high voltage supply system, we pulled the cable that connects to the cryostat high voltage feedthrough out of the feedthrough, and ramped it to 20kV in air.  No symptoms were observed during this test, indicating that the power supply, filter pots, high voltage cables, and AC power distribution were all functioning properly.  Based off of this, it was concluded that the warm side of the high voltage supply system was in good health, and the problems with the HV system were downstream of the cryostat's high voltage feedthrough.
 
-\subsection{V vs. I Tests on cathode}
+\subsection{Steady State Voltage Tests on cathode}
+
+With the warm side of the high voltage system shown to be working well, the next system that was investigated was the interior of the cryostat.  Inside of the cryostat, the high voltage first connects to the cathode plane via a connection from the high voltage feedthrough to a cup at the cathode.  The cathode, at the opposite end of the TPC, connects via a resistor chain through the field cage tubes to the shield plane at the wire planes.  From the shield plane, there is a cable leading to a feedthrough, as well as a 50 M$\Omega$ resistor between the shield plane and ground.
+
+One of the most useful tests performed during the diagnostic of MicroBooNE's high voltage system was the biasing of the cathode at low voltage with a precision power supply.  For this, we used a spare channel from our wire bias power supply system, which is a Weiner power supply.  We disconnected the cable that connects the second filter pot to the high voltage feedthrough, at the filter pot, and used a handmade breakout adapter to connect it to an SHV cable from the power supply.  The power supply allows us to monitor the current and voltage applied to the cathode.  By monitoring the behavior of the pickoff point, we can identify if there is a bad or intermittent connection between the power supply and pickoff point.
+
+Figure~\ref{fig:V-vs-I-time} shows the time response of the pickoff point for two tests.  In the left panel, the detector high voltage system was in a bad state, and in the right panel the detector has been restored to normal operations.  In Figure~\ref{fig:V-vs-I}, the analysis of this data is shown to determine if the results are linear as expected.  The left panel shows the failed test again, where we could not maintain a steady voltage on the pickoff point despite the steady voltage on the cathode.  In this Figure, the error bars shown are the RMS of the pickoff point voltage while the cathode is held at the applied voltage (x axis).  There is a non-negligible RC constant that affects this RMS, however it does not affect the conclusion that the first test was not successful.  
+
+In the right panel of Figure~\ref{fig:V-vs-I}, the measured pickoff point voltages are found by fitting an exponential to the behavior of the pickoff point after changing the applied voltage at the cathode.  This fit is done for all points shown in the Figure, and an example fit is seen in Figure~\ref{fig:RC-Pickoff}.  From this Figure, the RC constant of the system can be measured, and the combined measurement of all of the fit exponentials (at every point in Figure \ref{fig:V-vs-I}, right panel) yields an RC constant of 15.6 seconds.  Additionally, the linear fit of Figure~\ref{fig:V-vs-I} (right) shows the resistance of the field cage is measured at 17.3 G$\Omega$s, consistent with the design resistance from Section\ref{sec:HV-design}.
+
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.45\textwidth]{figures/V-vs-I-time-fail.pdf}
+  \includegraphics[width=0.45\textwidth]{figures/V-vs-I-time-pass.pdf}
+  \caption{caption}
+  \label{fig:V-vs-I-time}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.45\textwidth]{figures/V-vs-I-fail.pdf}
+  \includegraphics[width=0.45\textwidth]{figures/V-vs-I-successful.pdf}
+  \caption{caption}
+  \label{fig:V-vs-I}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  \includegraphics[width=0.75\textwidth]{figures/{RC-Pickoff-900.0}.pdf}
+  \caption{caption}
+  \label{fig:RC-pickoff}
+\end{figure}
+
+
 
 \subsection{Pickoff Point Measurements}
 \subsubsection{Current-source mode measurements}
