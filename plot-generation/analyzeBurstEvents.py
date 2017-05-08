@@ -5,64 +5,58 @@ import larlite
 import numpy
 from matplotlib import pyplot as plt
 
-if len(sys.argv) < 2:
-    msg = '\n'
-    msg += "Usage 1: %s $INPUT_ROOT_FILE\n" % sys.argv[0]
-    msg += '\n'
-    sys.stderr.write(msg)
-    sys.exit(1)
+from ROOT import evd
 
-from ROOT import larlite, evd
+_pre_fix_file = "/data/uboone/pulser_data/Feb24-pulser/PhysicsRun-2017_2_24_9_58_26-0010239-00001_20170226T201136_ext_unbiased_20170227T012225_merged.root"
+_post_fix_file = "/data/uboone/pulser_data/Feb24-pulser/PhysicsRun-2017_2_24_9_58_26-0010239-00018_20170226T201020_ext_unbiased_20170227T012640_merged.root"
 
 
-# Create ana_processor instance
-# my_proc = larlite.ana_processor()
 
-# Set input root file
-# for x in xrange(len(sys.argv)-1):
-# my_proc.add_input_file(sys.argv[x+1])
+ana_unit_pre = evd.DrawUbSwiz()
+ana_unit_pre.setInput(_pre_fix_file)
 
 
-# Specify IO mode
-# my_proc.set_io_mode(larlite.storage_manager.kREAD)
-
-# Specify analysis output root file name
-# my_proc.set_ana_output_file("showerRecoUboone_ana.root")
-# Specify data output root file name
-# my_proc.set_output_file("noneOutput.root")
-
-
-ana_unit = evd.DrawUbSwiz()
-ana_unit.setInput(sys.argv[-1])
-
-
-ana_unit.setYDimension(9600, 0)
-ana_unit.setYDimension(9600, 1)
-ana_unit.setYDimension(9600, 2)
+ana_unit_pre.setYDimension(9600, 0)
+ana_unit_pre.setYDimension(9600, 1)
+ana_unit_pre.setYDimension(9600, 2)
+ana_unit_pre.initialize()
+ana_unit_pre.SetCorrectData(False)
+ana_unit_pre.SetSaveData(False)
+ana_unit_pre.SetStepSizeByPlane(48, 0)
+ana_unit_pre.SetStepSizeByPlane(48, 1)
+ana_unit_pre.SetStepSizeByPlane(96, 2)
+ana_unit_pre.goToEvent(0)
 
 
-ana_unit.initialize()
-ana_unit.SetCorrectData(False)
-ana_unit.SetSaveData(False)
-ana_unit.SetStepSizeByPlane(48, 0)
-ana_unit.SetStepSizeByPlane(48, 1)
-ana_unit.SetStepSizeByPlane(96, 2)
+ana_unit_post = evd.DrawUbSwiz()
+ana_unit_post.setInput(_post_fix_file)
+ana_unit_post.setYDimension(9600, 0)
+ana_unit_post.setYDimension(9600, 1)
+ana_unit_post.setYDimension(9600, 2)
+ana_unit_post.initialize()
+ana_unit_post.SetCorrectData(False)
+ana_unit_post.SetSaveData(False)
+ana_unit_post.SetStepSizeByPlane(48, 0)
+ana_unit_post.SetStepSizeByPlane(48, 1)
+ana_unit_post.SetStepSizeByPlane(96, 2)
+ana_unit_post.goToEvent(0)
 
-# ana_unit.goToEvent(0)
-# ana_unit.goToEvent(1)
-ana_unit.goToEvent(6)
+
+_u_plane_pre = ana_unit_pre.getArrayByPlane(0)
+# _v_plane = ana_unit.getArrayByPlane(1)
+# _y_plane = ana_unit.getArrayByPlane(2)
 
 
-_u_plane = ana_unit.getArrayByPlane(0)
-_v_plane = ana_unit.getArrayByPlane(1)
-_y_plane = ana_unit.getArrayByPlane(2)
+_u_plane_post = ana_unit_post.getArrayByPlane(0)
 
 # Plot the max value of the event as a function of wire:
 
 
-_max_values_u = numpy.max(_u_plane, axis=1) / 2400.
-_max_values_v = numpy.max(_v_plane, axis=1) / 2400.
-_max_values_y = numpy.max(_y_plane, axis=1) / 3600.
+
+_max_values_u_pre = numpy.max(_u_plane_pre, axis=1)
+_max_values_u_post = numpy.max(_u_plane_post, axis=1)
+# _max_values_v = numpy.max(_v_plane, axis=1) / 2400.
+# _max_values_y = numpy.max(_y_plane, axis=1) / 3600.
 
 
 f, ax = plt.subplots(figsize=(20, 10))
@@ -71,17 +65,17 @@ start = 0
 end = start + 1000
 
 plt.plot(numpy.arange(0, 2400, 1),
-         _max_values_u,
+         _max_values_u_pre / _max_values_u_post,
          linewidth=2,
          label="Max ADC, U")
-plt.plot(numpy.arange(0, 2400, 1),
-         _max_values_v,
-         linewidth=2,
-         label="Max ADC, V")
-plt.plot(numpy.arange(0, 3456, 1),
-         _max_values_y,
-         linewidth=2,
-         label="Max ADC, Y")
+# plt.plot(numpy.arange(0, 2400, 1),
+#          _max_values_v,
+#          linewidth=2,
+#          label="Max ADC, V")
+# plt.plot(numpy.arange(0, 3456, 1),
+#          _max_values_y,
+#          linewidth=2,
+#          label="Max ADC, Y")
 
 for tick in ax.xaxis.get_major_ticks():
     tick.label.set_fontsize(20)

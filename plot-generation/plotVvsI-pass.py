@@ -13,7 +13,7 @@ from scipy import optimize
 
 
 def expWrapper(x, A, B, l):
-    return A - B * numpy.exp(- (1./l)*x)
+    return A + B * numpy.exp(- (1./l)*x)
 
 
 def fitExponetial(_input, plot=False):
@@ -54,9 +54,17 @@ def fitExponetial(_input, plot=False):
                           linewidth=3,
                           color='red')
 
+        fitString = "Fit: {A:.2f} + {B:.2f}".format(A = popt[0], B = popt[1])
+        exponentPart = "{tau:.1f}".format(tau=popt[2])
+        totalFitString = fitString + r"$e^{-\frac{t}{" + exponentPart + r"}}$"
+        # fitString = r"Fit: {A:.2f} - {B:.2f}*$e^-\\frac\\{t\\}\\{{tau:.2f}\\}".format( tau=popt[2])
+
+        print totalFitString
+
         extraString = 'Applied Voltage: -{}V'.format(_input['appliedV'].iloc[0])
         handles, labels = ax.get_legend_handles_labels()
         handles.append(mpatches.Patch(color='none', label=extraString))
+        handles.append(mpatches.Patch(color='none', label=totalFitString))
         plt.legend(handles=handles, fontsize=20)
 
         plt.xlabel("Time [s]", fontsize=20)
@@ -72,13 +80,65 @@ def fitExponetial(_input, plot=False):
         #     tick.label.set_horizontalalignment('right')
 
         plt.grid(True)
-        # plt.show()
         # print 'figures/RC-Pickoff-{}.pdf'.format(_input['appliedV'].iloc[0])
         plt.savefig(
             'figures/RC-Pickoff-{}.pdf'.format(_input['appliedV'].iloc[0]))
+        plt.show()
         plt.close()
 
     return popt, perr
+
+def plotVvsVTime(df):
+
+
+    fig, ax = plt.subplots(figsize=(16,9))
+    plt.subplots_adjust(bottom=0.17)
+    
+    plt.plot(df['Time'], df['weinerV'],
+        linewidth=2,label="Weiner Voltage",
+        color="black")
+    
+    ax.set_ylim([-1100,500])
+
+    handles, labels = ax.get_legend_handles_labels()
+
+    # plt.legend(fontsize=20,loc='upper left')
+    plt.grid(True)
+
+    ax.set_ylabel('Voltage [V]', fontsize=20, color='black')
+    ax.tick_params('y', colors='black',width=2, size=10, labelsize=20)
+    
+
+    for tick in ax.xaxis.get_major_ticks():
+        tick.label.set_fontsize(14) 
+        # specify integer or one of preset strings, e.g.
+        #tick.label.set_fontsize('x-small') 
+        tick.label.set_rotation(30)
+        tick.label.set_horizontalalignment('right')
+
+    plt.xlabel("Time", fontsize=20)
+
+    ax2 = ax.twinx()
+    plt.plot(df['Time'], df['pickoffV'],
+        linewidth = 2, label = "Pickoff Voltage",
+        color='g')
+
+    plt.ylim([-5, 1])
+
+    handles2, labels2 = ax2.get_legend_handles_labels()
+
+    handles2.append(handles[0])
+    labels2.append(labels[0])
+
+    ax2.set_ylabel('Pickoff Voltage [V]', fontsize=20, color='g')
+    ax2.tick_params('y', colors='g',width=2,size=10,labelsize=20)
+
+
+    plt.legend(fontsize=20, handles=handles2, labels=labels2)
+    plt.savefig('figures/V-vs-I-time-pass.pdf')
+    plt.show()
+
+
 
 
 def main():
@@ -98,24 +158,9 @@ def main():
 
     daysFmt = mdates.DateFormatter('%D %H:%M')
 
-    # plt.subplots_adjust(bottom=0.17)
 
-    # plt.ylim([-5, 5])
-    # plt.legend(fontsize=20,loc='upper left')
-    # plt.grid(True)
-
-    # ax2 = ax.twinx()
-
-    # plt.plot(df['Time'], df['weinerV'],
-    #     linewidth=2,label="Weiner Voltage")
-
-    # # ax2.set_ylabel('Current [uA*]', fontsize=20, color='g')
-    # # ax2.tick_params('y', colors='g',width=2,size=10,labelsize=20)
-
-    # ax2.set_ylim([-1100,100])
-
-    # plt.legend(fontsize=20)
-    # plt.show()
+    plotVvsVTime(df)
+    exit()
 
     # # plt.savefig("figures/pickoffPoint-Jan27-Deviation.pdf")
 

@@ -37,7 +37,7 @@
 # Channel: R (Gigaohms(
 # 
 
-Time	uB_OnDetPower_TPCPS_2_7_604/CURR_READ Value	uB_OnDetPower_TPCPS_2_7_604/SenseVOLT_READ Value	uB_TPCDrift_HV01_keithleyPickOff/getVoltage Value	R (Gigaohms) Value
+Time	uB_OnDetPower_TPCPS_2_7_604/CURR_READ Value	uB_OnDetPower_TPCPS_2_7_604/SenseVOLT_READ Value	uB_TPCDrift_HV01_keithleyPickOff/getVoltage Value	R Value
 2017/02/24 10:10:53.973610539	0.0000	-0.0667	-0.0132	-0.0650
 2017/02/24 10:11:05.514196580	0.0000	-0.0667	-0.0069	-0.0650
 2017/02/24 10:11:13.526173768	0.0000	-0.0667	-0.0048	-0.0650

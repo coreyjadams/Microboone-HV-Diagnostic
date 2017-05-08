@@ -9,7 +9,55 @@ import math
 pandas.options.mode.chained_assignment = None  # default='warn'
 
 
+def plotVvsVTime(df):
 
+
+    fig, ax = plt.subplots(figsize=(16,9))
+    plt.subplots_adjust(bottom=0.17)
+    
+    plt.plot(df['Time'], df['weinerV'],
+        linewidth=2,label="Weiner Voltage",
+        color="black")
+    
+    ax.set_ylim([-1100,500])
+
+    handles, labels = ax.get_legend_handles_labels()
+
+    # plt.legend(fontsize=20,loc='upper left')
+    plt.grid(True)
+
+    ax.set_ylabel('Voltage [V]', fontsize=20, color='black')
+    ax.tick_params('y', colors='black',width=2, size=10, labelsize=20)
+    
+
+    for tick in ax.xaxis.get_major_ticks():
+        tick.label.set_fontsize(14) 
+        # specify integer or one of preset strings, e.g.
+        #tick.label.set_fontsize('x-small') 
+        tick.label.set_rotation(30)
+        tick.label.set_horizontalalignment('right')
+
+    plt.xlabel("Time", fontsize=20)
+
+    ax2 = ax.twinx()
+    plt.plot(df['Time'], df['pickoffV'],
+        linewidth = 2, label = "Pickoff Voltage",
+        color='g')
+
+    plt.ylim([-5, 1])
+
+    handles2, labels2 = ax2.get_legend_handles_labels()
+
+    handles2.append(handles[0])
+    labels2.append(labels[0])
+
+    ax2.set_ylabel('Pickoff Voltage [V]', fontsize=20, color='g')
+    ax2.tick_params('y', colors='g',width=2,size=10,labelsize=20)
+
+
+    plt.legend(fontsize=20, handles=handles2, labels=labels2)
+    plt.savefig('figures/V-vs-I-time-fail.pdf')
+    plt.show()
 
 def main():
 
@@ -29,49 +77,14 @@ def main():
 
     # daysFmt = mdates.DateFormatter('%D/%Y %H:%M')
 
-    # fig, ax = plt.subplots(figsize=(16,9))
+    startTime=pandas.to_datetime("2017/02/09 13:49:34.056222308")
 
-    # plt.subplots_adjust(bottom=0.17)
+    print startTime
+    mask = (df['Time'] > startTime)
 
-    # # plt.ylim([-5, 5])
-    # plt.legend(fontsize=20,loc='upper left')
-    # plt.grid(True)
+    plotVvsVTime(df.loc[mask])
+    exit()
 
-    # plt.plot(df['Time'], df['weinerV'],
-    #     linewidth=2,label="Weiner Voltage",
-    #     color="black")
-
-    # ax.set_ylim([-1000,300])
-
-    # ax.set_ylabel('Applied Voltage [V]', fontsize=20, color='black')
-    # ax.tick_params('y', colors='black',width=2, size=10, labelsize=20)
-    
-
-    # ax2 = ax.twinx()
-
-    # plt.plot(df['Time'], df['pickoffV'],
-    #     linewidth=2,label="Pickoff Voltage",
-    #     color='green')
-
-    
-    # for tick in ax.xaxis.get_major_ticks():
-    #     tick.label.set_fontsize(14) 
-    #     # specify integer or one of preset strings, e.g.
-    #     #tick.label.set_fontsize('x-small') 
-    #     tick.label.set_rotation(30)
-    #     tick.label.set_horizontalalignment('right')
-
-    # ax2.tick_params('y', colors='g',width=2, size=10, labelsize=20)
-    # ax.set_ylabel('Pickoff Voltage [V]', fontsize=20, color='g')
-
-    # plt.xlabel("Time")
-
-    # plt.legend(fontsize=20)
-    # plt.show()
-
-    # exit()
-
-    # # plt.savefig("figures/pickoffPoint-Jan27-Deviation.pdf")
 
     # Make a plot of V vs. I:
     df['appliedV'] = -df['weinerV'].apply(round)
